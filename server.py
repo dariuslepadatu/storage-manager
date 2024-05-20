@@ -40,11 +40,89 @@ def get_products():
     if not data:
         abort(404, "Error no products")
     else:
-        return data
+        return jsonify(data)
 
+@app.route('/get_products_names', methods=['GET'])
+def get_products_names():
+    conn, cur = databaseAuth()
 
+    cur.execute('''SELECT id, name FROM products''')
+    conn.commit()
+    data = cur.fetchall()
+    if not data:
+        abort(404, "Error no products")
+    else:
+        return jsonify(data)
 
+@app.route('/get_products_descriptions', methods=['GET'])
+def get_products_descriptions():
+    conn, cur = databaseAuth()
 
+    cur.execute('''SELECT id, description FROM products''')
+    conn.commit()
+    data = cur.fetchall()
+    if not data:
+        abort(404, "Error no products")
+    else:
+        return jsonify(data)
+
+@app.route('/get_products_suppliers', methods=['GET'])
+def get_products_suppliers():
+    conn, cur = databaseAuth()
+
+    cur.execute('''SELECT id, supplier_id FROM products''')
+    conn.commit()
+    data = cur.fetchall()
+    if not data:
+        abort(404, "Error no products")
+    else:
+        return jsonify(data)
+
+@app.route('/list_storage', methods=['GET'])
+def list_storage():
+    conn, cur = databaseAuth()
+    name = request.args.get('name')
+    supplier = request.args.get('supplier')
+    type = request.args.get('type')
+
+    if type:
+        cur.execute('''
+            SELECT s.row_idx, s.column_idx, p.name AS product_name, p.description AS product_description, 
+                   p.supplier_id, sp.name AS supplier_name, sp.description AS supplier_description, t.tr_type, t.tr_date
+            FROM storage s
+            LEFT JOIN products p ON s.product_id = p.id
+            LEFT JOIN suppliers sp ON p.supplier_id = sp.unique_code
+            LEFT JOIN transactions t ON t.product_id = p.id
+            WHERE t.tr_type = %s
+        ''', (type,))
+    else:
+        query = '''
+            SELECT s.row_idx, s.column_idx, p.name AS product_name, p.description AS product_description, 
+                   p.supplier_id, sp.name AS supplier_name, sp.description AS supplier_description
+            FROM storage s
+            LEFT JOIN products p ON s.product_id = p.id
+            LEFT JOIN suppliers sp ON p.supplier_id = sp.unique_code
+        '''
+
+        if name:
+            query += ' WHERE p.name = %s'
+            params = (name,)
+        elif supplier:
+            query += ' WHERE sp.unique_code = %s'
+            params = (supplier,)
+        else:
+            params = None
+
+        cur.execute(query, params)
+
+    conn.commit()
+    data = cur.fetchall()
+
+    if not data:
+        abort(404, "Error: no products found.")
+
+    else:
+        return jsonify(data)
 
 
 

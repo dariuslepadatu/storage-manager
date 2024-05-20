@@ -59,8 +59,8 @@ def create_tables(conn, cur):
             CREATE TABLE IF NOT EXISTS transactions (
                 id SERIAL PRIMARY KEY,
                 product_id INT REFERENCES products(id),
-                type VARCHAR CHECK (type IN ('in', 'out')),
-                date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+                tr_type VARCHAR CHECK (tr_type IN ('in', 'out')),
+                tr_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
         """)
 
