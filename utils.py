@@ -5,7 +5,7 @@ PASSWORD = 'postgres'
 HOST = 'localhost'
 PORT = '5432'
 
-def databaseAuth(user=USER, password=PASSWORD, host=HOST, port=PORT):
+def database_auth(user=USER, password=PASSWORD, host=HOST, port=PORT):
     """
     Login to the database with specified arguments.
     """
@@ -22,10 +22,11 @@ def databaseAuth(user=USER, password=PASSWORD, host=HOST, port=PORT):
         print("Error while connecting to PostgreSQL", error)
         return None, None
 
-def create_tables(conn, cur):
+def create_tables():
     """
     Create tables if they don't exist already.
     """
+    [conn, cur] = database_auth()
     try:
         # Execute create table commands
         cur.execute("""
@@ -63,6 +64,7 @@ def create_tables(conn, cur):
                 tr_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
             )
         """)
+        conn.commit()
 
         conn.commit()
         print("Tables created successfully")

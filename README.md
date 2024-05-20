@@ -1,2 +1,0 @@
-# storage-manager
-test
