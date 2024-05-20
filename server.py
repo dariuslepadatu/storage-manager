@@ -7,7 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route('/products')
+@app.route('/')
 def index():
     """
     Display data to pyhton server only for debugging.
@@ -124,7 +124,47 @@ def list_storage():
     else:
         return jsonify(data)
 
+@app.route('/add_to_storage', methods=['POST'])
+def add_to_storage():
+    conn, cur = databaseAuth()
 
+    row_idx = request.args.get('row_idx')
+    column_idx = request.args.get('column_idx')
+    product_id = request.args.get('product_id')
+    print(row_idx, column_idx, product_id)
+    if not row_idx  or not column_idx or not product_id:
+        abort(404, "Error arguments are missing")
+
+    else:
+        cur.execute('''
+            INSERT INTO storage (row_idx, column_idx, product_id) VALUES (%s, %s, %s)
+        ''', (row_idx, column_idx, product_id))
+        conn.commit()
+
+        cur.close()
+        conn.close()
+        return jsonify({"message": "Product succesfully added"}), 200
+
+
+
+@app.route('/delete_from_storage', methods=['DELETE'])
+def delete_from_storage():
+    conn, cur = databaseAuth()
+
+    row_idx = request.args.get('row_idx')
+    column_idx = request.args.get('column_idx')
+
+    if not row_idx or not column_idx:
+        abort(400, "Error arguments are missing")
+
+    else:
+        cur.execute('''
+            DELETE FROM storage WHERE row_idx = %s AND column_idx = %s
+        ''', (row_idx, column_idx))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify({"message": "Product succesfully deleted"}), 200
 
 if __name__ == '__main__':
 	app.run(debug=True)
