@@ -1,0 +1,28 @@
+CREATE TABLE suppliers (
+    unique_code VARCHAR PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    description VARCHAR
+);
+
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR NOT NULL,
+    supplier_id VARCHAR REFERENCES suppliers(unique_code),
+    description VARCHAR
+);
+
+
+CREATE TABLE storage (
+    id SERIAL PRIMARY KEY,
+    row_idx INT NOT NULL,
+    column_idx INT NOT NULL,
+    product_id INT REFERENCES products(id),
+    UNIQUE (row_idx, column_idx)
+);
+
+CREATE TABLE transactions (
+    id SERIAL PRIMARY KEY,
+    product_id INT REFERENCES products(id),
+    type VARCHAR CHECK (type IN ('in', 'out')),
+    date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
