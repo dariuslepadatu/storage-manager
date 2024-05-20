@@ -1,18 +1,17 @@
 import psycopg2
 
-USER = 'utilizator'
-PASSWORD = 'parola'
+USER = 'postgres'
+PASSWORD = 'postgres'
 HOST = 'localhost'
 PORT = '5432'
-DATABASE = 'nume_baza_de_date'
 
-def databaseAuth(user=USER, password=PASSWORD, host=HOST, port=PORT, database=DATABASE):
+def databaseAuth(user=USER, password=PASSWORD, host=HOST, port=PORT):
     """
     Login to the database with specified arguments.
     """
     try:
         # Connect to the database
-        conn = psycopg2.connect(user=user, password=password, host=host, port=port, database=database)
+        conn = psycopg2.connect(user=user, password=password, host=host, port=port)
 
         # create a cursor
         cur = conn.cursor()
